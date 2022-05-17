@@ -1,0 +1,148 @@
+println MACRO
+    mov ah, 2
+    mov dl, 10
+    int 21h
+    endm
+    
+print_string MACRO string
+    mov ah, 9
+    mov dx, offset string
+    int 21h
+    endm
+    
+end_program MACRO
+    mov ah, 4ch
+    int 21h
+    endm
+    
+print_help MACRO
+    print_string help_message
+    end_program
+    endm
+    
+open_file MACRO filename, my_fhandler
+    local subor_nacitany
+    mov ah, 3dH
+    mov al, 0
+    mov dx, offset filename
+    int 21h
+    mov my_fhandler, ax
+    jnc subor_nacitany
+    print_string subor_error
+    end_program
+    subor_nacitany:
+    endm
+
+create_file MACRO filename, my_fhandler
+	mov ah, 3ch
+	mov cx, 0
+	mov dx, offset filename
+	int 21h
+	mov my_fhandler, ax	
+	endm
+    
+close_file MACRO my_fhandler
+    mov ah, 3eh
+    mov bx, my_fhandler
+    int 21h
+    endm
+
+clrscr MACRO
+    mov ax, 0003h
+    int 10h
+    endm
+
+stringToDefault MACRO myVar
+    local najdi_dolar
+    mov si, offset myVar
+    dec si
+    najdi_dolar:
+    inc si
+    cmp byte ptr [si], '$'
+    jne najdi_dolar
+    mov byte ptr [si], 0
+    endm
+    
+defaultToString MACRO myVar
+    local najdi_nulu
+    mov si, offset myVar
+    dec si
+    najdi_nulu:
+    inc si
+    cmp byte ptr [si], 0
+    jne najdi_nulu
+    mov byte ptr [si], '$'
+    endm
+
+strlen MACRO myStr, myStrLen
+    local najdi_dolar
+    mov myStrLen, 0
+    mov si, offset myStr
+    dec si
+    najdi_dolar:
+    inc si
+    inc myStrLen
+    cmp byte ptr [si], '$'
+    jne najdi_dolar
+    dec myStrLen 
+    endm
+
+val_dif MACRO val1, val2, output
+    local reverse_sub, fin
+    mov ax, val2
+    cmp val1, ax
+    jl reverse_sub
+    mov ax, val1
+    sub ax, val2
+    jmp fin
+    reverse_sub:
+    mov ax, val2
+    sub ax, val1 
+    fin:
+    mov output, ax
+    endm
+
+clear_buffer MACRO my_buffer, my_buffer_size
+	local dalsi_znak
+	mov dx, my_buffer_size
+	mov si, offset my_buffer
+	dalsi_znak:
+	mov byte ptr [si], '$'
+	inc si
+	dec dx
+	cmp dx, 0
+	jne dalsi_znak
+	endm
+
+strcpy MACRO my_buffer1, my_buffer2
+	local dalsi_znak
+	mov si, offset my_buffer1
+	mov di, offset my_buffer2
+	dalsi_znak:
+	mov dl, byte ptr [si]
+	mov byte ptr [di], dl
+	inc si
+	inc di
+	cmp byte ptr [si], '$'
+	jne dalsi_znak
+	mov byte ptr [di], '$'
+	endm
+
+write_to_file MACRO string, my_fhandler
+	local dalsi_znak
+	mov cx, 0
+	push si
+	lea si, string
+	dec si
+	dec cx
+	dalsi_znak:
+	inc si
+	inc cx
+	cmp byte ptr [si], '$'
+	jne dalsi_znak
+	pop si
+    	mov ah, 40h
+	mov bx, my_fhandler
+	lea dx, string
+	int 21h
+	endm

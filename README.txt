@@ -1,0 +1,3 @@
+Inside folder input you can find examples of input files for my program.
+Input file "big_file.txt" was randomly generated with lowercase letter with the size of 100 kB. There are words "ahoj" sprinkled among these random letters. This file serves as proof that my program can handle files with size above 64 kB.
+Input files "small_file_1.txt", "small_file_2.txt" and "small_file_3.txt" were manually made and I put some random words in there. You can try to replace some of these words with my program.
